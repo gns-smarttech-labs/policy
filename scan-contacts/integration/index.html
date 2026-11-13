@@ -75,6 +75,29 @@
         font-size: 14.5px;
       }
 
+      .warning-box {
+        background-color: #fff8f8;
+        border: 1px solid #ff8182;
+        border-left: 5px solid #cf222e;
+        border-radius: 6px;
+        padding: 16px;
+        margin-bottom: 24px;
+        color: #24292e;
+      }
+
+      .warning-box h3 {
+        margin: 0 0 8px 0;
+        font-size: 16px;
+        color: #cf222e;
+      }
+
+      .warning-box p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+
       h2 {
         font-size: 20px;
         color: var(--primary-color);
@@ -272,17 +295,32 @@
         </p>
       </section>
 
+      <section class="warning-box">
+        <h3>⚠️ Security Notice &amp; User Disclaimer</h3>
+        <p>
+          <strong>Notice:</strong> External webhook endpoints receive complete contact record payloads. If an untrusted third party asks you to configure their webhook URL, they may be able to fetch and store all your contacts. Only add endpoints you own, control, or trust.
+          <strong>Our application and developers bear no responsibility or liability for any third-party endpoints or their handling of transmitted data.</strong>
+        </p>
+      </section>
+
       <section>
         <h2><span>📡</span> Request Specification</h2>
 
         <div class="spec-card">
           <div class="spec-item">
-            <span class="spec-label">HTTP Method:</span>
-            <span class="spec-value"><span class="badge-method">POST</span></span>
+            <span class="spec-label">Protocol &amp; Method:</span>
+            <span class="spec-value"><strong>HTTPS</strong> (TLS 1.2+) &nbsp;|&nbsp; <span class="badge-method">POST</span></span>
           </div>
           <div class="spec-item">
-            <span class="spec-label">Header:</span>
-            <span class="spec-value"><code>Content-Type: application/json</code></span>
+            <span class="spec-label">Headers:</span>
+            <span class="spec-value">
+              <code>Content-Type: application/json</code><br />
+              <code>X-Device-Id: &lt;unique_device_id&gt;</code><br />
+              <code>X-Webhook-Signature: &lt;secret_key&gt;</code> <em style="color: #57606a;">(Default: <code>default</code>)</em><br />
+              <code>X-Webhook-HMAC-SHA256: &lt;hex_digest&gt;</code><br />
+              <code>Authorization: Bearer &lt;token&gt;</code> <em style="color: #57606a;">(Optional custom header)</em><br />
+              <code>X-Api-Key: &lt;api_key&gt;</code> <em style="color: #57606a;">(Optional API key)</em>
+            </span>
           </div>
           <div class="spec-item">
             <span class="spec-label">Body:</span>
@@ -300,6 +338,8 @@
   <span class="token-punctuation">{</span>
     <span class="token-property">"action"</span><span class="token-punctuation">:</span> <span class="token-string">"NEW | UPDATE | DELETE"</span><span class="token-punctuation">,</span>
     <span class="token-property">"id"</span><span class="token-punctuation">:</span> <span class="token-string">"contact_id_string"</span><span class="token-punctuation">,</span>
+    <span class="token-property">"device_id"</span><span class="token-punctuation">:</span> <span class="token-string">"8a3f91b72c4e5d60"</span><span class="token-punctuation">,</span>
+    <span class="token-property">"signature"</span><span class="token-punctuation">:</span> <span class="token-string">"default"</span><span class="token-punctuation">,</span>
     <span class="token-property">"contact"</span><span class="token-punctuation">:</span> <span class="token-punctuation">{</span>
       <span class="token-property">"id"</span><span class="token-punctuation">:</span> <span class="token-string">"contact_id_string"</span><span class="token-punctuation">,</span>
       <span class="token-property">"name"</span><span class="token-punctuation">:</span> <span class="token-string">"John Doe"</span><span class="token-punctuation">,</span>
@@ -323,6 +363,58 @@
   <span class="token-punctuation">}</span>
 <span class="token-punctuation">]</span></code></pre>
         </div>
+      </section>
+
+      <section>
+        <h2><span>🛡️</span> Essential Security Mitigation Strategies</h2>
+        <p>To ensure bulletproof endpoint security, Business Card Scanner implements three industry-standard mitigation strategies:</p>
+
+        <h3>1. Enforce HTTPS (TLS 1.2+)</h3>
+        <p>By default, the application requires and strictly enforces <code>https://</code> for all webhook endpoints. Insecure plain HTTP dispatches are rejected prior to transmission to prevent eavesdropping and man-in-the-middle attacks on public networks.</p>
+
+        <h3>2. Validate HMAC-SHA256 Signatures</h3>
+        <p>Each outgoing payload is cryptographically hashed using HMAC-SHA256 with your shared secret key. The resulting digest is sent in the <code>X-Webhook-HMAC-SHA256</code> header. Receiving servers should verify this signature before processing contacts:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <span>Node.js (Express) Signature Verification</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code>const crypto = require('crypto');
+
+function verifyWebhook(req, res, next) {
+  const signature = req.headers['x-webhook-hmac-sha256'];
+  const secret = process.env.WEBHOOK_SECRET || 'default';
+  const expected = crypto.createHmac('sha256', secret)
+                         .update(req.rawBody)
+                         .digest('hex');
+
+  if (!crypto.timingSafeEqual(Buffer.from(signature || ''), Buffer.from(expected))) {
+    return res.status(401).json({ error: 'Invalid HMAC signature' });
+  }
+  next();
+}</code></pre>
+        </div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <span>Python (FastAPI / Flask) Signature Verification</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code>import hmac, hashlib
+
+def verify_webhook(raw_body: bytes, signature_header: str, secret: str = 'default') -> bool:
+    expected = hmac.new(secret.encode(), raw_body, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(signature_header, expected)</code></pre>
+        </div>
+
+        <h3>3. Custom Authorization Headers (Secret API Key or JWT)</h3>
+        <p>If your webhook receiver or API Gateway (e.g. AWS API Gateway, Kong, Cloudflare Workers, Supabase) requires Bearer tokens or API keys, configure the optional <strong>Custom Authorization Header</strong> in app settings. The app automatically dispatches:</p>
+        <ul>
+          <li><code>Authorization: Bearer &lt;token&gt;</code></li>
+          <li><code>X-Api-Key: &lt;key&gt;</code></li>
+          <li><code>X-Device-Id: &lt;device_id&gt;</code> (Enables per-device rate limiting and auditing)</li>
+        </ul>
       </section>
 
       <section>

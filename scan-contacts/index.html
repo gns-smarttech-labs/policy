@@ -77,6 +77,29 @@
         font-size: 14.5px;
       }
 
+      .warning-box {
+        background-color: #fff8f8;
+        border: 1px solid #ff8182;
+        border-left: 5px solid #cf222e;
+        border-radius: 6px;
+        padding: 16px;
+        margin: 20px 0;
+        color: #24292e;
+      }
+
+      .warning-box h3 {
+        margin: 0 0 8px 0;
+        font-size: 16px;
+        color: #cf222e;
+      }
+
+      .warning-box p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+
       h2 {
         font-size: 20px;
         color: var(--primary-color);
@@ -144,7 +167,7 @@
         <h1>Privacy Policy — Business Card Scanner</h1>
         <div class="meta-date">
           <strong>Effective Date:</strong> September 01, 2026 &nbsp;|&nbsp;
-          <strong>Last Updated:</strong> September 01, 2026
+          <strong>Last Updated:</strong> October 25, 2026
         </div>
       </div>
 
@@ -240,6 +263,18 @@
               contact data is sent to external servers.
             </td>
           </tr>
+          <tr>
+            <td><strong>Notifications &amp; Exact Alarms</strong></td>
+            <td>
+              To schedule and deliver local follow-up reminders that you set for
+              specific contacts at your designated date and time.
+            </td>
+            <td>
+              Notifications and reminders are scheduled and executed entirely
+              on-device via native alarm APIs. No notification content, notes, or contact
+              details are transmitted off-device.
+            </td>
+          </tr>
         </tbody>
       </table>
 
@@ -314,9 +349,53 @@
           saved to a temporary location on your device and shared only through
           your device's native share sheet, under your manual control.
         </li>
+        <li>
+          <strong>User-configured webhooks:</strong> If explicitly enabled by you,
+          contact sync event payloads are transmitted directly to the HTTP URL
+          you provide. See Section 6 for our complete third-party webhook disclaimer.
+        </li>
       </ul>
 
-      <h2>6. Data Retention, Control, and Deletion</h2>
+      <h2>6. User-Configured Webhook Endpoints &amp; Explicit Disclaimer of Liability</h2>
+      <p>
+        The Application provides an optional Webhook integration feature allowing users to transmit scanned and saved contact data in real-time to a custom HTTP/HTTPS endpoint specified by the user.
+      </p>
+
+      <div class="warning-box">
+        <h3>⚠️ Critical Security Warning &amp; User Consent</h3>
+        <p>
+          <strong>Warning:</strong> If an external third party, employer, client, or unknown service instructs or requests you to enter their Webhook URL into the Application, <strong>they may be able to fetch, store, and process all your contacts</strong>. Never enter or save an external webhook endpoint unless you personally own, manage, or completely trust the destination server and have audited its privacy practices.
+        </p>
+      </div>
+
+      <p>
+        By configuring and saving a custom webhook URL within the Application, you acknowledge, understand, and explicitly agree to the following terms:
+      </p>
+      <ul>
+        <li>
+          <strong>User Initiation &amp; Explicit Consent:</strong> Webhook data transmission is disabled by default and occurs solely upon your explicit entry, validation, and consent via the in-app confirmation dialog requiring you to confirm with <em>"I Accept &amp; Add"</em>.
+        </li>
+        <li>
+          <strong>Transmission of Contact Data:</strong> When configured, event payloads containing contact details (such as names, phone numbers, email addresses, organizations, addresses, notes, and custom fields) are transmitted directly from your device to the endpoint URL you designated.
+        </li>
+        <li>
+          <strong>Complete Disclaimer of Responsibility:</strong> Our Application, developer(s), and affiliates <strong>assume ZERO responsibility and have NO liability whatsoever</strong> for:
+          <ul>
+            <li>Any third-party server, service, database, or endpoint configured by the user;</li>
+            <li>The confidentiality, security, encryption, storage, retention, processing, or misuse of data once transmitted to that endpoint;</li>
+            <li>Any unauthorized access, data intercept, exposure, leak, or fraudulent activity resulting from a third party requesting you to enter their URL;</li>
+            <li>Any loss, damage, legal claims, or regulatory penalties arising from your decision to transmit data to an external URL.</li>
+          </ul>
+        </li>
+        <li>
+          <strong>User's Sole Risk &amp; Responsibility:</strong> You acknowledge that configuring external webhook endpoints is done entirely at your own risk, discretion, and legal responsibility. You are solely responsible for verifying the authenticity and trustworthiness of any endpoint you configure.
+        </li>
+        <li>
+          <strong>Revocation at Any Time:</strong> You may modify or delete the webhook configuration at any time through the in-app Webhook Settings screen, which immediately ceases further automated dispatches.
+        </li>
+      </ul>
+
+      <h2>7. Data Retention, Control, and Deletion</h2>
       <p>
         Because all scanned contact data resides exclusively on your local
         device:
@@ -339,14 +418,14 @@
         </li>
       </ul>
 
-      <h2>7. Changes to This Privacy Policy</h2>
+      <h2>8. Changes to This Privacy Policy</h2>
       <p>
         We may update this Privacy Policy from time to time to reflect app
         updates, new features, or regulatory changes. Updated versions will be
         posted on this page with a revised "Effective Date."
       </p>
 
-      <h2>8. Contact Us</h2>
+      <h2>9. Contact Us</h2>
       <p>
         If you have any questions or feedback regarding this Privacy Policy or
         our data practices, please contact us at:
